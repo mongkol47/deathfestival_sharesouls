@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>อย่าปล่อยให้เรื่องราวของคนที่คุณรักถูกลืม - ShareSouls</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            text-align: center;
+            background: url('resource/BG.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        .get-message-btn {
+            background-color: #6D4C41;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: 0.3s;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
+        .get-message-btn:hover {
+            background-color: #5d4037;
+        }
+
+        .message-card {
+            display: none;
+            position: relative;
+            width: 320px;
+            height: 400px;
+            padding: 20px;
+            background: url('resource/card_bg.png') no-repeat center center;
+            background-size: cover;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease-in-out;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 1 !important;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .quote-box {
+            font-size: 22px;
+            font-weight: bold;
+            color: gold;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            max-width: 80%;
+        }
+
+        .button-group {
+            display: none;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            background-color: #6D4C41;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #5d4037;
+        }
+
+            /* ========== Popup Modal (สีดำ) ========== */
+            .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .modal-content {
+            background-color: #222;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            width: 320px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transform: scale(0.8);
+            animation: scaleUp 0.3s ease-in-out forwards;
+            color: white;
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 18px;
+            color: red;
+            cursor: pointer;
+        }
+
+        .modal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .modal-buttons button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            gap: 8px;
+        }
+
+        .share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    color: white;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: 0.3s;
+    width: 250px;
+    text-align: left;
+}
+
+.share-btn img {
+    width: 24px; /* ปรับให้ทุกไอคอนมีขนาดเท่ากัน */
+    height: 24px;
+    object-fit: contain; /* ป้องกันภาพผิดสัดส่วน */
+}
+
+
+.facebook-btn {
+    background-color: #1877F2;
+}
+
+.line-btn {
+    background-color: #06C755;
+}
+
+.instagram-btn {
+    background-color: #C13584;
+}
+
+.share-btn:hover {
+    opacity: 0.8;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="getMessageBtn" class="get-message-btn" onclick="generateMessage()">💌 รับข้อความจากคนบนฟ้า</button>
+
+        <div id="messageContainer">
+            <div class="message-card" id="messageCard">
+                <div class="quote-box" id="quote">กำลังสุ่มข้อความ...</div>
+            </div>
+
+            <div class="button-group" id="buttonContainer">
+                <button onclick="openShareModal()">📤 แชร์ Sharesouls </button>
+                <button onclick="saveImage()">📸 บันทึก</button>
+                <button onclick="closeCard()">❌ ปิด</button>
+            </div>
+        </div>
+    </div>
+
+   <!-- Popup Modal สำหรับเลือกแชร์ -->
+   <div id="shareModal" class="modal" onclick="closeShareModal()">
+    <div class="modal-content" onclick="event.stopPropagation();">
+        <span class="close" onclick="closeShareModal()">❌</span>
+        <h2>แชร์ไปที่</h2>
+            <div class="modal-buttons">
+                <button class="share-btn facebook-btn" onclick="shareFacebook()">
+                    <img src="resource/fb logo.png" alt="Facebook"> แชร์ไป Facebook
+                </button>
+                <button class="share-btn line-btn" onclick="shareLine()">
+                    <img src="resource/line logo.png" alt="Line"> แชร์ไป Line
+                </button>
+                <button class="share-btn instagram-btn" onclick="shareInstagram()">
+                    <img src="resource/ig logo.png" alt="Instagram"> แชร์ไป Instagram
+                </button>
+                
+        </div>
+    </div>
+</div>
+
+    <script>
+        const quotes = [
+    "อย่าร้องไห้เพราะฉันจากไป แต่จงยิ้มเพราะเราเคยมีช่วงเวลาดี ๆ ด้วยกัน 🌅",
+    "แม้ฉันจะไม่ได้อยู่ตรงนี้ แต่ฉันจะอยู่ในทุกความทรงจำที่อบอุ่นของเธอเสมอ ❤️",
+    "เธอไม่ได้อยู่คนเดียวหรอกนะ ฉันยังคอยมองดูเธอจากที่แสนไกล ☁️",
+    "ความรักของฉันที่มีให้เธอ ไม่ได้หายไปไหนเลยนะ แค่เปลี่ยนเป็นสายลมที่โอบกอดเธออยู่ 🌬️",
+    "ฉันภูมิใจในตัวเธอมากนะ อย่าลืมดูแลตัวเองให้ดีด้วย 💖",
+    "ทุกครั้งที่เธอคิดถึงฉัน ให้เธอเงยหน้ามองฟ้า แล้วเธอจะรู้ว่าฉันอยู่ตรงนั้นเสมอ ☁️✨",
+    "ฉันอยากให้เธอมีความสุข อยากให้เธอหัวเราะ เพราะทุกครั้งที่เธอยิ้ม หัวใจฉันก็อบอุ่นไปด้วย 😊💛",
+    "ไม่ต้องร้องไห้เพราะฉันจากไป แต่ขอให้เธอจดจำทุกช่วงเวลาดี ๆ ที่เราเคยมีด้วยกัน 🌈",
+    "แม้จะมองไม่เห็นฉัน แต่ฉันยังคอยเฝ้ามองเธอจากที่แสนไกลเสมอ ❤️👀",
+    "เธอไม่ได้อยู่คนเดียวหรอกนะ เพราะฉันยังอยู่ในทุกสิ่งที่เธอรักและทุกความทรงจำที่เธอมี 💖",
+    "ทุกครั้งที่เธอหัวเราะ ฉันก็หัวเราะไปกับเธอ แม้จะอยู่ไกลแค่ไหนก็ตาม 🎶💫",
+    "ฉันรู้ว่าเธอคิดถึงฉัน แต่เธอต้องใช้ชีวิตต่อไปอย่างเข้มแข็งนะ ฉันจะอยู่ในทุกย่างก้าวของเธอ 🛤️",
+    "ฉันไม่ได้หายไปไหนนะ แค่ย้ายไปอยู่ในความรักและความทรงจำของเธอแทน 💗",
+    "ฉันจะเป็นแสงแดดอ่อน ๆ ยามเช้า และสายลมเย็น ๆ ที่คอยปลอบโยนเธอเสมอ 🌞🍃",
+    "ถ้าเธอเหนื่อย ให้เธอพักก่อนนะ ฉันอยากให้เธอดูแลตัวเองให้ดี 💜",
+    "ฉันภูมิใจในตัวเธอมากนะ ไม่ว่าเธอจะทำอะไร ฉันเชื่อว่าเธอจะทำได้ดีเสมอ 🌻",
+    "อย่ากลัวการเดินทางข้างหน้านะ เธอยังมีฉันอยู่ในหัวใจของเธอเสมอ 🚀💛",
+    "ความรักของฉันยังคงอยู่ตรงนี้ อยู่ในทุกสิ่งที่ทำให้เธอรู้สึกอบอุ่น 💞🌤️",
+    "ไม่ต้องเสียใจไปนะ ฉันยังคงอยู่ในทุกเสียงหัวเราะและรอยยิ้มของเธอ 🌟",
+    "ทุกครั้งที่สายลมพัดผ่าน จงรู้ไว้ว่านั่นคืออ้อมกอดของฉันที่ส่งไปหาเธอ 💨💙"
+];
+
+        function generateMessage() {
+            document.getElementById("getMessageBtn").style.visibility = "hidden";
+            setTimeout(() => {
+                document.getElementById("quote").textContent = quotes[Math.floor(Math.random() * quotes.length)];
+                document.getElementById("messageCard").style.display = "flex";
+                document.getElementById("buttonContainer").style.display = "flex";
+            }, 300);
+        }
+
+        function openShareModal() {
+            document.getElementById("shareModal").style.display = "flex";
+        }
+
+        function closeShareModal() {
+            document.getElementById("shareModal").style.display = "none";
+        }
+
+        function shareFacebook() {
+            const url = `https://www.facebook.com/sharer/sharer.php?u=https://sharesouls.com/`;
+            window.open(url, '_blank');
+            closeShareModal();
+        }
+
+        function shareLine() {
+            const url = `https://line.me/R/msg/text/?ข้อความดีๆจากคนบนฟ้า https://sharesouls.com/`;
+            window.open(url, '_blank');
+            closeShareModal();
+        }
+
+        function shareInstagram() {
+            alert("กรุณาเปิดจากมือถือเพื่อแชร์ไป Instagram Stories 📷");
+            closeShareModal();
+        }
+
+        function saveImage() {
+    html2canvas(document.getElementById('messageCard'), { scale: 3, useCORS: true })
+        .then(canvas => {
+            canvas.toBlob(blob => {
+                if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                    // สำหรับ Internet Explorer และ Edge
+                    window.navigator.msSaveOrOpenBlob(blob, "healing_message.png");
+                } else {
+                    const link = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    link.href = url;
+                    link.download = "healing_message.png";
+
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // ล้างหน่วยความจำที่ใช้โดย ObjectURL
+                    setTimeout(() => {
+                        URL.revokeObjectURL(url);
+                        document.body.removeChild(link);
+                    }, 100);
+                }
+            }, 'image/png');
+        });
+}
+
+        function closeCard() {
+            document.getElementById("messageCard").style.display = "none";
+            document.getElementById("buttonContainer").style.display = "none";
+            document.getElementById("getMessageBtn").style.visibility = "visible";
+        }
+    </script>
+</body>
+</html>
